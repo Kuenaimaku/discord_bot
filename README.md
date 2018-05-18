@@ -2,6 +2,11 @@
 python3 discord bot using discord.py library
 
 ```
+legend:
+group:
+  command [variable]
+    ∟ subcommand [variable]
+
 Tags:
   tag [name]                  - Responds with content of tag [name]
    ∟ add [name][message]      - Creates a new tag
