@@ -62,3 +62,17 @@ class KitsuClient():
         user['relationships']['favorites']['anime'] = anime
         user['relationships']['favorites']['manga'] = manga
         return user
+
+    async def get_anime(self, text: str = None):
+        params = {'page[limit]': 1, 'page[offset]': 0}
+        if text:
+            params['filter[text]'] = text
+        anime = await self._fetch('{0}anime'.format(self.base_url), params=params)
+        return anime
+
+    async def get_manga(self, text: str = None):
+        params = {'page[limit]': 1, 'page[offset]': 0}
+        if text:
+            params['filter[text]'] = text
+        manga = await self._fetch('{0}manga'.format(self.base_url), params=params)
+        return manga

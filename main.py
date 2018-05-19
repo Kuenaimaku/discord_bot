@@ -3,6 +3,8 @@ from discord.utils import find
 import configparser
 import discord
 
+import aiohttp
+
 parser = configparser.ConfigParser()
 parser.read('config/userconfig.ini')
 
@@ -20,7 +22,6 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game('Testing Rewrite'))
 
 
-
 @bot.event
 async def on_member_join(member):
     # Add the regular role to whoever joins
@@ -30,10 +31,13 @@ async def on_member_join(member):
 initial_extensions = [
     'cogs.tags',
     'cogs.image',
-    'cogs.text'
+    'cogs.sound',
+    'cogs.text',
+    'cogs.kitsu'
 ]
 
 if __name__ == '__main__':
+    bot._session = aiohttp.ClientSession()
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)

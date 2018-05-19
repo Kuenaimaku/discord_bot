@@ -25,7 +25,7 @@ class Tag:
         else:
             await ctx.send('Tag `{0}` does not exist (did you mean to `create` this tag?).'.format(name))
 
-    @checks.has_role('Admin')
+    @checks.has_role('ANBU ( Mods)')
     @tag.command(aliases=['add'])
     async def create(self, ctx, name: str, *, content: str):
         """Add content to tag with the name of 'name'"""
