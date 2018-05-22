@@ -12,7 +12,7 @@ class Tag:
 
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, name: str = None):
-        """"""
+        """Text on demand."""
         _base_directory = 'storage/{0}/tags/'.format(str(ctx.guild.id))
         directory.touch(_base_directory)
         tags = directory.list_files(_base_directory)
@@ -71,6 +71,19 @@ class Tag:
         else:
             await ctx.send('Tag `{0}` does not exist (did you mean to `create` this tag?)'.format(name))
 
+    @tag.command(aliases=['list'])
+    async def search(self, ctx, name: str=None):
+        """Add content to tag with the name of 'name'"""
+        _base_directory = 'storage/{0}/tags/'.format(str(ctx.guild.id))
+        directory.touch(_base_directory)
+        tags = directory.list_files(_base_directory)
+        filtered_tags = [x for x in tags if name in '{0}'.format(x)]
+        if filtered_tags and len(filtered_tags) > 1:
+            await ctx.send('Multiple tags found:\n`{0}`'.format('\n'.join(filtered_tags)))
+        elif filtered_tags:
+            await ctx.send('One tag found:\n`{0}`'.format('\n'.join(filtered_tags)))
+        else:
+            await ctx.send('No tags with `{0}` exist.'.format(name))
 
 def setup(bot):
     bot.add_cog(Tag(bot))

@@ -18,7 +18,7 @@ class Kitsu:
 
     @commands.group()
     async def kitsu(self, ctx):
-        """"""
+        """Kitsu API Wrapper."""
         if ctx.invoked_subcommand is None:
             await ctx.message.channel.send("Incorrect kitsu subcommand passed.")
 

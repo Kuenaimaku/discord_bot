@@ -14,10 +14,11 @@ class Sound:
     def __init__(self, bot):
         self.bot = bot
         self.session = self.bot._session
+        self.sound_extensions = ['.wav', '.mp3', '.ogg']
 
     @commands.group(invoke_without_command=True)
     async def sound(self, ctx, name: str = None):
-        """"""
+        """Sounds on demand."""
         _base_directory = 'storage/{0}/sounds/'.format(str(ctx.guild.id))
         directory.touch(_base_directory)
         sounds = directory.list_files(_base_directory)
@@ -43,13 +44,14 @@ class Sound:
             for attachment in ctx.message.attachments:
                 _url = str(attachment.proxy_url)
                 fn, extension = os.path.splitext(_url)
-                with async_timeout.timeout(10):
-                    async with self.session.get(url=_url) as r:
-                        try:
-                            with open('{0}{1}{2}'.format(_base_directory, name, extension), "wb") as local_file:
-                                local_file.write(await r.read())
-                        except(asyncio.TimeoutError, aiohttp.ClientResponseError):
-                            pass  # raise client error
+                if extension in self.image_extensions:
+                    with async_timeout.timeout(10):
+                        async with self.session.get(url=_url) as r:
+                            try:
+                                with open('{0}{1}{2}'.format(_base_directory, name, extension), "wb") as local_file:
+                                    local_file.write(await r.read())
+                            except(asyncio.TimeoutError, aiohttp.ClientResponseError):
+                                pass  # raise client error
             await ctx.send('Sound `{0}` created.'.format(name))
         else:
             await ctx.send('No attachment found.')
@@ -81,17 +83,31 @@ class Sound:
             for attachment in ctx.message.attachments:
                 _url = str(attachment.proxy_url)
                 fn, extension = os.path.splitext(_url)
-                with async_timeout.timeout(10):
-                    async with self.session.get(url=_url) as r:
-                        try:
-                            with open('{0}{1}{2}'.format(_base_directory, name, extension), "wb") as local_file:
-                                local_file.write(await r.read())
-                        except(asyncio.TimeoutError, aiohttp.ClientResponseError):
-                            pass  # raise client error
-                await ctx.send('Sound `{0}` edited.'.format(name))
+                if extension in self.image_extensions:
+                    with async_timeout.timeout(10):
+                        async with self.session.get(url=_url) as r:
+                            try:
+                                with open('{0}{1}{2}'.format(_base_directory, name, extension), "wb") as local_file:
+                                    local_file.write(await r.read())
+                            except(asyncio.TimeoutError, aiohttp.ClientResponseError):
+                                pass  # raise client error
+                    await ctx.send('Sound `{0}` edited.'.format(name))
         else:
             await ctx.send('Sound `{0}` does not exist (did you mean to `create` this sound?)'.format(name))
 
+    @sound.command(aliases=['list'])
+    async def search(self, ctx, name: str=None):
+        """Add content to tag with the name of 'name'"""
+        _base_directory = 'storage/{0}/tags/'.format(str(ctx.guild.id))
+        directory.touch(_base_directory)
+        tags = directory.list_files(_base_directory)
+        filtered_tags = [x for x in tags if name in '{0}'.format(x)]
+        if filtered_tags and len(filtered_tags) > 1:
+            await ctx.send('Multiple tags found:\n`{0}`'.format('\n'.join(filtered_tags)))
+        elif filtered_tags:
+            await ctx.send('One tag found:\n`{0}`'.format('\n'.join(filtered_tags)))
+        else:
+            await ctx.send('No tags with `{0}` exist.'.format(name))
 
 def setup(bot):
     bot.add_cog(Sound(bot))
